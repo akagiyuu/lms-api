@@ -19,5 +19,5 @@ public class Subject
     public string? SubjectName { get; set; }
 
     [Required]
-    public int? Credit { get; set; }
+    public int Credit { get; set; }
 }
