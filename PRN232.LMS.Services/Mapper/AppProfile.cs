@@ -8,22 +8,38 @@ public class AppProfile : Profile
 {
     public AppProfile()
     {
-        CreateMap<Semester, SemesterResponse>().ReverseMap();
+        CreateMap<Semester, BasicSemesterResponse>();
+        CreateMap<Semester, SemesterResponse>();
+
+        CreateMap<Course, BasicCourseResponse>();
+        CreateMap<Course, CourseResponse>();
+
+        CreateMap<Subject, SubjectResponse>();
+
+        CreateMap<Student, BasicStudentResponse>();
+        CreateMap<Student, StudentResponse>();
+
+        CreateMap<Enrollment, BasicEnrollmentResponse>();
+        CreateMap<Enrollment, EnrollmentResponse>();
+
         CreateMap<CreateSemesterRequest, Semester>();
-        CreateMap<UpdateSemesterRequest, Semester>();
+        CreateMap<UpdateSemesterRequest, Semester>()
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
-        CreateMap<Subject, SubjectResponse>().ReverseMap();
-        CreateMap<CreateSubjectRequest, Subject>();
-        CreateMap<UpdateSubjectRequest, Subject>();
-
-        CreateMap<Course, CourseResponse>().ReverseMap();
         CreateMap<CreateCourseRequest, Course>();
-        CreateMap<UpdateCourseRequest, Course>();
+        CreateMap<UpdateCourseRequest, Course>()
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
-        CreateMap<Student, StudentResponse>().ReverseMap();
+        CreateMap<CreateSubjectRequest, Subject>();
+        CreateMap<UpdateSubjectRequest, Subject>()
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
         CreateMap<CreateStudentRequest, Student>();
-        CreateMap<UpdateStudentRequest, Student>();
+        CreateMap<UpdateStudentRequest, Student>()
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
-        CreateMap<Enrollment, EnrollmentResponse>().ReverseMap();
+        CreateMap<CreateEnrollmentRequest, Enrollment>();
+        CreateMap<UpdateEnrollmentRequest, Enrollment>()
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
     }
 }
