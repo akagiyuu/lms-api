@@ -1,15 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PRN232.LMS.Repositories.Models;
 
-public partial class Semester
+[Table("Semester")]
+public class Semester
 {
-    public int? Semesterid { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int SemesterId { get; set; }
 
-    public string? Semestername { get; set; }
+    [Required]
+    [MaxLength(100)]
+    public string? SemesterName { get; set; }
 
-    public DateTime? Startdate { get; set; }
+    [Required]
+    public DateTimeOffset StartDate { get; set; }
 
-    public DateTime? Enddate { get; set; }
+    [Required]
+    public DateTimeOffset EndDate { get; set; }
+
+    public ICollection<Course> Courses { get; set; } = [];
 }

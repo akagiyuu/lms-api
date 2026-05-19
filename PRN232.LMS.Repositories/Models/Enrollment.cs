@@ -1,17 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PRN232.LMS.Repositories.Models;
 
-public partial class Enrollment
+[Table("Enrollment")]
+public class Enrollment
 {
-    public int? Enrollmentid { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int EnrollmentId { get; set; }
 
-    public int? Studentid { get; set; }
+    [Required]
+    public int StudentId { get; set; }
 
-    public int? Courseid { get; set; }
+    [Required]
+    public int CourseId { get; set; }
 
-    public DateTime? Enrolldate { get; set; }
+    [Required]
+    public DateTimeOffset EnrollDate { get; set; }
 
+    [Required]
+    [MaxLength(20)]
     public string? Status { get; set; }
+
+    [ForeignKey(nameof(StudentId))]
+    public Student Student { get; set; } = null!;
+
+    [ForeignKey(nameof(CourseId))]
+    public Course Course { get; set; } = null!;
 }
