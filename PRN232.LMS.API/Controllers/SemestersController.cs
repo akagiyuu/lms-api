@@ -36,27 +36,10 @@ public class SemestersController(SemesterService service) : ControllerBase
     }
 
     [HttpPatch("{id:int}")]
-    public async Task<ActionResult<ApiResponse<object>>> Patch(int id, [FromBody] JsonPatchDocument<UpdateSemesterRequest> patchDoc)
-    {
-        if (patchDoc is null) return BadRequest(ApiResponse<object>.Fail("Invalid patch doc"));
-
-        var existing = await _service.GetByIdAsync(id);
-        if(existing is null) return NotFound(ApiResponse<object>.Fail("Semester not founc"));
-
-        var dto = new UpdateSemesterRequest
-        {
-            SemesterName = existing.SemesterName,
-            StartDate = existing.StartDate,
-            EndDate = existing.EndDate,
-        };
-
-        patchDoc.ApplyTo(dto, ModelState);
-        if(!ModelState.IsValid) return BadRequest(ApiResponse<object>.Fail("Invalid patch request", ModelState));
-
-        return await _service.PatchAsync(id, dto)
+    public async Task<ActionResult<ApiResponse<object>>> Patch(int id, [FromBody] UpdateSemesterRequest request)
+        => await _service.PatchAsync(id, request)
             ? Ok(ApiResponse<object>.Ok(null!, "Semester updated"))
             : NotFound(ApiResponse<object>.Fail("Semester not found"));
-    }
 
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<ApiResponse<object>>> Delete(int id)
