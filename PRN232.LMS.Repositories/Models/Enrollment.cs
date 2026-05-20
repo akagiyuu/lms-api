@@ -17,7 +17,7 @@ public class Enrollment
     public int CourseId { get; set; }
 
     [Required]
-    public DateTimeOffset EnrollDate { get; set; }
+    public DateTimeOffset? EnrollDate { get; set; }
 
     [Required]
     [MaxLength(20)]

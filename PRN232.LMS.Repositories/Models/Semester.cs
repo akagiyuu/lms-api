@@ -15,10 +15,10 @@ public class Semester
     public string? SemesterName { get; set; }
 
     [Required]
-    public DateTimeOffset StartDate { get; set; }
+    public DateTimeOffset? StartDate { get; set; }
 
     [Required]
-    public DateTimeOffset EndDate { get; set; }
+    public DateTimeOffset? EndDate { get; set; }
 
     public ICollection<Course> Courses { get; set; } = [];
 }
