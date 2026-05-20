@@ -1,11 +1,12 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using PRN232.LMS.Repositories.Models;
 
 namespace PRN232.LMS.Repositories;
 
-public class GenericRepository<T, TContext>(TContext context) where T : class where TContext : DbContext
+public class GenericRepository<T>(AppDbContext context) where T : class
 {
-    private readonly TContext _context = context;
+    private readonly AppDbContext _context = context;
     private readonly DbSet<T> _set = context.Set<T>();
 
     public IQueryable<T> Query() => _set.AsQueryable();
@@ -25,7 +26,7 @@ public class GenericRepository<T, TContext>(TContext context) where T : class wh
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(T data)
+    public async Task RemoveAsync(T data)
     {
         _set.Remove(data);
         await _context.SaveChangesAsync();
