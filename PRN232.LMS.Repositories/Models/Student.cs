@@ -19,7 +19,7 @@ public class Student
     public string? Email { get; set; }
 
     [Required]
-    public DateTimeOffset DateOfBirth { get; set; }
+    public DateTimeOffset? DateOfBirth { get; set; }
 
     public ICollection<Enrollment> Enrollments { get; set; } = [];
 }
