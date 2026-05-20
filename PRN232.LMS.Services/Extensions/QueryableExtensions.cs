@@ -42,9 +42,7 @@ public static class QueryableExtensions
         foreach (var token in expand.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             if (expandMap.TryGetValue(token, out var includeFn))
-            {
                 query = includeFn(query);
-            }
         }
 
         return query;
@@ -57,29 +55,27 @@ public static class QueryableExtensions
         return query.Skip((page - 1) * size).Take(size);
     }
 
-    public static async Task<Common.PagedResult<object>> ToPagedResultAsync<T>(
-        this IQueryable<T> query,
-        QueryParameters param
-    )
+    public static Common.PagedResult<object> ToPagedResult<T>(
+        this IEnumerable<T> source,
+        int totalItems,
+        QueryParameters param)
     {
         var page = param.Page < 1 ? 1 : param.Page;
         var size = param.Size < 1 ? 10 : param.Size;
 
-        var total = await query.CountAsync();
-        var data = await query.ApplyPaging(page, size).ToListAsync();
-
         List<object> items;
 
-        if (string.IsNullOrEmpty(param.Fields))
+        if (string.IsNullOrWhiteSpace(param.Fields))
         {
-            items = data.Cast<object>().ToList();
+            items = source.Cast<object>().ToList();
         }
         else
         {
             var fields = param.Fields
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
-            items = data.Select(item =>
+
+            items = source.Select(item =>
             {
                 IDictionary<string, object?> obj = new ExpandoObject();
 
@@ -97,9 +93,9 @@ public static class QueryableExtensions
         {
             Page = page,
             Size = size,
-            TotalItems = total,
-            TotalPages = (int)Math.Ceiling(total / (double)size),
-            Items = items,
+            TotalItems = totalItems,
+            TotalPages = (int)Math.Ceiling(totalItems / (double)size),
+            Items = items
         };
     }
 }
