@@ -10,6 +10,11 @@ function pickRandom<T>(items: T[]): T {
     return items[Math.floor(Math.random() * items.length)];
 }
 
+// Helper to truncate text fields at 100 characters
+function truncate(str: string, length: number = 100): string {
+    return str.substring(0, length);
+}
+
 async function main(): Promise<void> {
     const connectionString = process.env.DATABASE_URL;
     if (!connectionString) {
@@ -44,7 +49,7 @@ async function main(): Promise<void> {
         VALUES ($1, $2, $3)
         RETURNING "SemesterId"
         `,
-                [`Semester ${i}`, toUtcIso(start), toUtcIso(end)],
+                [truncate(`Semester ${i}`), toUtcIso(start), toUtcIso(end)],
             );
 
             semesterIds.push(result.rows[0].SemesterId);
@@ -59,8 +64,8 @@ async function main(): Promise<void> {
         RETURNING "SubjectId"
         `,
                 [
-                    `SUB${String(i).padStart(3, "0")}`,
-                    faker.commerce.productName(),
+                    truncate(`SUB${String(i).padStart(3, "0")}`),
+                    truncate(faker.commerce.productName()),
                     faker.number.int({ min: 1, max: 4 }),
                 ],
             );
@@ -77,7 +82,7 @@ async function main(): Promise<void> {
         RETURNING "CourseId"
         `,
                 [
-                    `Course ${i} - ${faker.hacker.phrase()}`,
+                    truncate(`Course ${i} - ${faker.hacker.phrase()}`),
                     pickRandom(semesterIds),
                 ],
             );
@@ -99,8 +104,8 @@ async function main(): Promise<void> {
         RETURNING "StudentId"
         `,
                 [
-                    fullName,
-                    faker.internet.email({ firstName, lastName }),
+                    truncate(fullName),
+                    truncate(faker.internet.email({ firstName, lastName })),
                     toUtcIso(
                         faker.date.birthdate({ min: 18, max: 30, mode: "age" }),
                     ),
@@ -122,7 +127,7 @@ async function main(): Promise<void> {
                     pickRandom(studentIds),
                     pickRandom(courseIds),
                     toUtcIso(faker.date.past({ years: 1 })),
-                    pickRandom(statuses),
+                    truncate(pickRandom(statuses)),
                 ],
             );
         }

@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: lms-db
+    environment:
+      POSTGRES_DB: lms
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5432:5432"
+    volumes:
+      - lms_pgdata:/var/lib/postgresql
+
+  api:
+    build:
+      context: .
+      dockerfile: PRN232.LMS.API/Dockerfile
+    container_name: lms-api
+    environment:
+      DATABASE_URL: Host=db;Port=5432;Database=lms;Username=postgres;Password=123456
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5210:8080"
+    depends_on:
+      - db
+
+volumes:
+  lms_pgdata:
