@@ -9,6 +9,7 @@ namespace PRN232.LMS.API.Controllers;
 
 [ApiController]
 [Route("api/subjects")]
+[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 public class SubjectsController(SubjectService service) : ControllerBase
 {
     private readonly SubjectService _service = service;
@@ -21,6 +22,7 @@ public class SubjectsController(SubjectService service) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<SubjectResponse>>> GetById(int id)
     {
         var data = await _service.GetByIdAsync(id);
@@ -29,6 +31,7 @@ public class SubjectsController(SubjectService service) : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<ApiResponse<SubjectResponse>>> Create(CreateSubjectRequest request)
     {
         var data = await _service.CreateAsync(request);
@@ -36,12 +39,14 @@ public class SubjectsController(SubjectService service) : ControllerBase
     }
 
     [HttpPatch("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<object>>> Patch(int id, UpdateSubjectRequest request)
         => await _service.PatchAsync(id, request)
             ? Ok(ApiResponse<object>.Ok(null!, "Subject updated"))
             : NotFound(ApiResponse<object>.Fail("Subject not found"));
 
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<object>>> Delete(int id)
         => await _service.DeleteAsync(id)
             ? Ok(ApiResponse<object>.Ok(null!, "Subject deleted"))

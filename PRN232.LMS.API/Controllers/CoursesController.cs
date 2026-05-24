@@ -8,6 +8,7 @@ namespace PRN232.LMS.API.Controllers;
 
 [ApiController]
 [Route("api/courses")]
+[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 public class CoursesController(CourseService service) : ControllerBase
 {
     private readonly CourseService _service = service;
@@ -20,6 +21,7 @@ public class CoursesController(CourseService service) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<CourseResponse>>> GetById(int id)
     {
         var data = await _service.GetByIdAsync(id);
@@ -28,6 +30,7 @@ public class CoursesController(CourseService service) : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<ApiResponse<CourseResponse>>> Create(CreateCourseRequest request)
     {
         var data = await _service.CreateAsync(request);
@@ -35,12 +38,14 @@ public class CoursesController(CourseService service) : ControllerBase
     }
 
     [HttpPatch("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<object>>> Patch(int id, UpdateCourseRequest request)
         => await _service.PatchAsync(id, request)
             ? Ok(ApiResponse<object>.Ok(null!, "Course updated"))
             : NotFound(ApiResponse<object>.Fail("Course not found"));
 
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<object>>> Delete(int id)
         => await _service.DeleteAsync(id)
             ? Ok(ApiResponse<object>.Ok(null!, "Course deleted"))

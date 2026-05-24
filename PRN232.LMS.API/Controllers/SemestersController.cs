@@ -10,6 +10,7 @@ namespace PRN232.LMS.API.Controllers;
 
 [ApiController]
 [Route("api/semesters")]
+[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 public class SemestersController(SemesterService service) : ControllerBase
 {
     private readonly SemesterService _service = service;
@@ -22,6 +23,7 @@ public class SemestersController(SemesterService service) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<SemesterResponse>>> GetById(int id)
     {
         var data = await _service.GetByIdAsync(id);
@@ -29,6 +31,7 @@ public class SemestersController(SemesterService service) : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<ApiResponse<SemesterResponse>>> Create(CreateSemesterRequest request)
     {
         var data = await _service.CreateAsync(request);
@@ -36,12 +39,14 @@ public class SemestersController(SemesterService service) : ControllerBase
     }
 
     [HttpPatch("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<object>>> Patch(int id, [FromBody] UpdateSemesterRequest request)
         => await _service.PatchAsync(id, request)
             ? Ok(ApiResponse<object>.Ok(null!, "Semester updated"))
             : NotFound(ApiResponse<object>.Fail("Semester not found"));
 
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<object>>> Delete(int id)
         => await _service.DeleteAsync(id)
             ? Ok(ApiResponse<object>.Ok(null!, "Semester deleted"))
