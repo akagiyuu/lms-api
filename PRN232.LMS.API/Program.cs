@@ -17,6 +17,7 @@ builder.Services.AddScoped(typeof(GenericRepository<>));
 builder.Services.AddAutoMapper(cfg => { }, typeof(AppProfile));
 
 builder.Services.AddScoped<SemesterService>();
+builder.Services.AddScoped<SubjectService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
