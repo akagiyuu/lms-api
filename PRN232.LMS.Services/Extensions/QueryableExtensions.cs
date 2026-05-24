@@ -74,6 +74,11 @@ public static class QueryableExtensions
             var fields = param.Fields
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var expands = param.Expand is null
+                ? []
+                : param.Expand
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             items = source.Select(item =>
             {
@@ -81,7 +86,7 @@ public static class QueryableExtensions
 
                 foreach (var prop in typeof(T).GetProperties())
                 {
-                    if (fields.Contains(prop.Name))
+                    if (fields.Contains(prop.Name) || expands.Contains(prop.Name))
                         obj[prop.Name] = prop.GetValue(item);
                 }
 
