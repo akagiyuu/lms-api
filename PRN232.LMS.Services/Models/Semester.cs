@@ -5,8 +5,8 @@ public class BasicSemesterResponse
 {
     public int SemesterId { get; set; }
     public string? SemesterName { get; set; }
-    public DateTimeOffset StartDate { get; set; }
-    public DateTimeOffset EndDate { get; set; }
+    public DateTimeOffset? StartDate { get; set; }
+    public DateTimeOffset? EndDate { get; set; }
 }
 
 public class SemesterResponse : BasicSemesterResponse
@@ -17,8 +17,8 @@ public class SemesterResponse : BasicSemesterResponse
 public class CreateSemesterRequest
 {
     public string? SemesterName { get; set; }
-    public DateTimeOffset StartDate { get; set; }
-    public DateTimeOffset EndDate { get; set; }
+    public DateTimeOffset? StartDate { get; set; }
+    public DateTimeOffset? EndDate { get; set; }
 }
 
 public class UpdateSemesterRequest

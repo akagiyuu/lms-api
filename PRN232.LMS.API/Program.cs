@@ -18,6 +18,9 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(AppProfile));
 
 builder.Services.AddScoped<SemesterService>();
 builder.Services.AddScoped<SubjectService>();
+builder.Services.AddScoped<CourseService>();
+builder.Services.AddScoped<StudentService>();
+builder.Services.AddScoped<EnrollmentService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

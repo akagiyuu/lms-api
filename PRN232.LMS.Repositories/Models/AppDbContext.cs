@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace PRN232.LMS.Repositories.Models;
 
 public partial class AppDbContext : DbContext
 {
-
     public AppDbContext() { }
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -38,5 +38,21 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(x => x.CourseId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
+    }
+}
+
+public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
+{
+    public AppDbContext CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+
+        var connectionString =
+            Environment.GetEnvironmentVariable("DATABASE_URL")
+            ?? "Host=localhost;Port=5432;Database=lms;Username=postgres;Password=123456";
+
+        optionsBuilder.UseNpgsql(connectionString);
+
+        return new AppDbContext(optionsBuilder.Options);
     }
 }

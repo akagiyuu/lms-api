@@ -17,7 +17,7 @@ public class CreateStudentRequest
 {
     public string? FullName { get; set; }
     public string? Email { get; set; }
-    public DateTimeOffset DateOfBirth { get; set; }
+    public DateTimeOffset? DateOfBirth { get; set; }
 }
 
 public class UpdateStudentRequest

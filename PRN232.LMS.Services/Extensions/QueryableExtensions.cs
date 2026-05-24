@@ -14,7 +14,7 @@ public static class QueryableExtensions
         var stringProps = typeof(T)
             .GetProperties()
             .Where(x => x.PropertyType == typeof(string))
-            .Select(x => $"{x.Name}.ToLower().Contain(@0)")
+            .Select(x => $"{x.Name}.ToLower().Contains(@0)")
             .ToList();
         if (stringProps.Count == 0) return query;
 
