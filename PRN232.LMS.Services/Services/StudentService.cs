@@ -15,11 +15,10 @@ public class StudentService(GenericRepository<Student> repo, IMapper mapper): Cr
     protected override IReadOnlyDictionary<string, Func<IQueryable<Student>, IQueryable<Student>>> ExpandMap
         => new Dictionary<string, Func<IQueryable<Student>, IQueryable<Student>>>
         {
-            ["enrollments"] = q => q.Include(x => x.Enrollments).ThenInclude(e => e.Student)
+            ["enrollments"] = q => q.Include(x => x.Enrollments)
         };
 
     protected override IQueryable<Student> BuildIdQuery()
         => _repo.Query()
-            .Include(x => x.Enrollments)
-                .ThenInclude(e => e.Student);
+            .Include(x => x.Enrollments);
 }

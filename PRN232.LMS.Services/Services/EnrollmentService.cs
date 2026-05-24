@@ -16,12 +16,11 @@ public class EnrollmentService(GenericRepository<Enrollment> repo, IMapper mappe
         => new Dictionary<string, Func<IQueryable<Enrollment>, IQueryable<Enrollment>>>
         {
             ["student"] = q => q.Include(x => x.Student),
-            ["course"] = q => q.Include(x => x.Course).ThenInclude(c => c.Semester)
+            ["course"] = q => q.Include(x => x.Course)
         };
 
     protected override IQueryable<Enrollment> BuildIdQuery()
         => _repo.Query()
             .Include(x => x.Student)
-            .Include(x => x.Course)
-                .ThenInclude(c => c.Semester);
+            .Include(x => x.Course);
 }

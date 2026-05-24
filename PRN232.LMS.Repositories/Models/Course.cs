@@ -15,7 +15,7 @@ public class Course
     public string? CourseName { get; set; }
 
     [Required]
-    public int SemesterId { get; set; }
+    public int? SemesterId { get; set; }
 
     [ForeignKey(nameof(SemesterId))]
     public Semester Semester { get; set; } = null!;

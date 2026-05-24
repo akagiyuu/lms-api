@@ -12,7 +12,7 @@ using PRN232.LMS.Repositories.Models;
 namespace PRN232.LMS.Repositories.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260519162215_InitialCreate")]
+    [Migration("20260524142756_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

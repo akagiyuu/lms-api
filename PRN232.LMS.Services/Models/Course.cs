@@ -4,7 +4,7 @@ public class BasicCourseResponse
 {
     public int CourseId { get; set; }
     public string? CourseName { get; set; }
-    public int SemesterId { get; set; }
+    public int? SemesterId { get; set; }
 }
 
 public class CourseResponse : BasicCourseResponse
@@ -16,7 +16,7 @@ public class CourseResponse : BasicCourseResponse
 public class CreateCourseRequest
 {
     public string? CourseName { get; set; }
-    public int SemesterId { get; set; }
+    public int? SemesterId { get; set; }
 }
 
 public class UpdateCourseRequest

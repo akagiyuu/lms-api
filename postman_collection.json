@@ -1,0 +1,1850 @@
+
+{
+  "info": {
+    "name": "PRN232 LMS API",
+    "description": "Collection for verifying the LMS REST API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Semesters",
+      "item": [
+        {
+          "name": "List Semesters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:5210/api/semesters?search=Semester&sort=-semesterId&page=1&size=10&fields=semesterId,semesterName,startDate,endDate&expand=courses"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200]', function () {",
+                  "  pm.expect([200]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Semester by Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:5210/api/semesters/1"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404]', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Semester",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:5210/api/semesters",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"semesterName\": \"Fall 2026\",\n  \"startDate\": \"2026-09-01T00:00:00+07:00\",\n  \"endDate\": \"2026-12-31T23:59:59+07:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [201]', function () {",
+                  "  pm.expect([201]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Patch Semester",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:5210/api/semesters/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"semesterName\": \"Fall 2026 Updated\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404, 400]', function () {",
+                  "  pm.expect([200, 404, 400]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Semester",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "http://localhost:5210/api/semesters/1"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404]', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Subjects",
+      "item": [
+        {
+          "name": "List Subjects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:5210/api/subjects?search=math&sort=subjectCode&page=1&size=10&fields=subjectId,subjectCode,subjectName,credit"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200]', function () {",
+                  "  pm.expect([200]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Subject by Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:5210/api/subjects/1"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404]', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Subject",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:5210/api/subjects",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectCode\": \"MATH101\",\n  \"subjectName\": \"Discrete Mathematics\",\n  \"credit\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [201]', function () {",
+                  "  pm.expect([201]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Patch Subject",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:5210/api/subjects/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectName\": \"Discrete Math\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404, 400]', function () {",
+                  "  pm.expect([200, 404, 400]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Subject",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "http://localhost:5210/api/subjects/1"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404]', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "List Courses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:5210/api/courses?search=prn&sort=courseName&page=1&size=10&fields=courseId,courseName,semesterId&expand=semester,enrollments"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200]', function () {",
+                  "  pm.expect([200]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Course by Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:5210/api/courses/1"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404]', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:5210/api/courses",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courseName\": \"PRN232\",\n  \"semesterId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [201]', function () {",
+                  "  pm.expect([201]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Patch Course",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:5210/api/courses/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courseName\": \"PRN232 Updated\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404, 400]', function () {",
+                  "  pm.expect([200, 404, 400]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Course",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "http://localhost:5210/api/courses/1"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404]', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "List Students",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:5210/api/students?search=nguyen&sort=fullName,-studentId&page=1&size=10&fields=studentId,fullName,email,dateOfBirth&expand=enrollments"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200]', function () {",
+                  "  pm.expect([200]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Student by Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:5210/api/students/1"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404]', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:5210/api/students",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Nguyen Van A\",\n  \"email\": \"nguyenvana@example.com\",\n  \"dateOfBirth\": \"2005-01-01T00:00:00+07:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [201]', function () {",
+                  "  pm.expect([201]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Patch Student",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:5210/api/students/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Nguyen Van A Updated\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404, 400]', function () {",
+                  "  pm.expect([200, 404, 400]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Student",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "http://localhost:5210/api/students/1"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404]', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Enrollments",
+      "item": [
+        {
+          "name": "List Enrollments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:5210/api/enrollments?search=active&sort=-enrollDate&page=1&size=10&fields=enrollmentId,studentId,courseId,enrollDate,status&expand=student,course"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200]', function () {",
+                  "  pm.expect([200]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Enrollment by Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:5210/api/enrollments/1"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404]', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Enrollment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:5210/api/enrollments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": 1,\n  \"courseId\": 1,\n  \"enrollDate\": \"2026-05-24T00:00:00+07:00\",\n  \"status\": \"Active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [201]', function () {",
+                  "  pm.expect([201]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Patch Enrollment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:5210/api/enrollments/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Completed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404, 400]', function () {",
+                  "  pm.expect([200, 404, 400]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Enrollment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "http://localhost:5210/api/enrollments/1"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert selected date fields to UTC ISO strings before sending.",
+                  "function toUtcIso(value) {",
+                  "  if (!value) return value;",
+                  "  const d = new Date(value);",
+                  "  if (Number.isNaN(d.getTime())) return value;",
+                  "  return d.toISOString();",
+                  "}",
+                  "",
+                  "function rewriteJsonBodyDateFields(keys) {",
+                  "  try {",
+                  "    const raw = pm.request.body && pm.request.body.raw;",
+                  "    if (!raw) return;",
+                  "    const body = JSON.parse(raw);",
+                  "    let changed = false;",
+                  "    for (const key of keys) {",
+                  "      if (body[key]) {",
+                  "        const utc = toUtcIso(body[key]);",
+                  "        if (utc !== body[key]) {",
+                  "          body[key] = utc;",
+                  "          changed = true;",
+                  "        }",
+                  "      }",
+                  "    }",
+                  "    if (changed) {",
+                  "      pm.request.body.update(JSON.stringify(body, null, 2));",
+                  "    }",
+                  "  } catch (e) {",
+                  "    console.log('Failed to normalize date fields to UTC:', e);",
+                  "  }",
+                  "}",
+                  "",
+                  "// Only normalize known date fields used by your API.",
+                  "rewriteJsonBodyDateFields(['startDate', 'endDate', 'dateOfBirth', 'enrollDate']);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is one of [200, 404]', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('Response has success flag', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success');",
+                  "  pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
