@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PRN232.LMS.API.Middleware;
 using PRN232.LMS.Repositories;
 using PRN232.LMS.Repositories.Models;
 using PRN232.LMS.Services.Mapper;
@@ -28,6 +29,7 @@ builder.Services.AddSwaggerGenNewtonsoftSupport();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseSwagger();
 app.UseSwaggerUI();
 
