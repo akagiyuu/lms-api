@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PRN232.LMS.API.Common;
 using PRN232.LMS.API.Middleware;
 using PRN232.LMS.Repositories;
 using PRN232.LMS.Repositories.Models;
@@ -16,6 +18,28 @@ builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(connectionStrin
 
 builder.Services.AddScoped(typeof(GenericRepository<>));
 builder.Services.AddAutoMapper(cfg => { }, typeof(AppProfile));
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(e => e.Value.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+            );
+
+        var customResponse = new ApiResponse<object>
+        {
+            Success = false,
+            Message = "One or more validation errors occurred.",
+            Errors = errors
+        };
+
+        return new BadRequestObjectResult(customResponse);
+    };
+});
 
 builder.Services.AddScoped<SemesterService>();
 builder.Services.AddScoped<SubjectService>();
