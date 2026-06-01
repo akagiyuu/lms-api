@@ -1,23 +1,15 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
 namespace PRN232.LMS.Repositories.Models;
 
-[Table("Subject")]
-public class Subject
+public partial class Subject
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int SubjectId { get; set; }
 
-    [Required]
-    [MaxLength(20)]
-    public string? SubjectCode { get; set; }
+    public string SubjectCode { get; set; } = null!;
 
-    [Required]
-    [MaxLength(100)]
-    public string? SubjectName { get; set; }
+    public string SubjectName { get; set; } = null!;
 
-    [Required]
-    public int? Credit { get; set; }
+    public int Credit { get; set; }
 }

@@ -1,24 +1,17 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
 namespace PRN232.LMS.Repositories.Models;
 
-[Table("Course")]
-public class Course
+public partial class Course
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int CourseId { get; set; }
 
-    [Required]
-    [MaxLength(100)]
-    public string? CourseName { get; set; }
+    public string CourseName { get; set; } = null!;
 
-    [Required]
-    public int? SemesterId { get; set; }
+    public int SemesterId { get; set; }
 
-    [ForeignKey(nameof(SemesterId))]
-    public Semester Semester { get; set; } = null!;
+    public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 
-    public ICollection<Enrollment> Enrollments { get; set; } = [];
+    public virtual Semester Semester { get; set; } = null!;
 }

@@ -1,25 +1,17 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
 namespace PRN232.LMS.Repositories.Models;
 
-[Table("Student")]
-public class Student
+public partial class Student
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int StudentId { get; set; }
 
-    [Required]
-    [MaxLength(100)]
-    public string? FullName { get; set; }
+    public string FullName { get; set; } = null!;
 
-    [Required]
-    [MaxLength(100)]
-    public string? Email { get; set; }
+    public string Email { get; set; } = null!;
 
-    [Required]
-    public DateTimeOffset? DateOfBirth { get; set; }
+    public DateTime DateOfBirth { get; set; }
 
-    public ICollection<Enrollment> Enrollments { get; set; } = [];
+    public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 }
