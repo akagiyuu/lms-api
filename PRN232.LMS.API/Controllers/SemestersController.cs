@@ -9,7 +9,7 @@ using PRN232.LMS.Services.Services;
 namespace PRN232.LMS.API.Controllers;
 
 [ApiController]
-[Route("api/semesters")]
+[Route("api/[controller]")]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 public class SemestersController(SemesterService service) : ControllerBase
 {
