@@ -7,7 +7,7 @@ using PRN232.LMS.Services.Services;
 namespace PRN232.LMS.API.Controllers;
 
 [ApiController]
-[Route("api/enrollments")]
+[Route("api/[controller]")]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 public class EnrollmentsController(EnrollmentService service) : ControllerBase
 {
