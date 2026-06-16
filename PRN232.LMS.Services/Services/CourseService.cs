@@ -3,11 +3,14 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PRN232.LMS.Repositories;
 using PRN232.LMS.Repositories.Models;
-using PRN232.LMS.Services.Models;
+using PRN232.LMS.Services.Models.Business;
+using PRN232.LMS.Services.Models.Request;
+using PRN232.LMS.Services.Models.Response;
 
 namespace PRN232.LMS.Services.Services;
 
-public class CourseService(GenericRepository<Course> repo, IMapper mapper) : CrudServiceBase<Course, CourseResponse, CreateCourseRequest, UpdateCourseRequest>(repo, mapper)
+public class CourseService(GenericRepository<Course> repo, IMapper mapper)
+    : CrudServiceBase<Course, CourseBusiness, CourseResponse, CreateCourseRequest, UpdateCourseRequest>(repo, mapper)
 {
     protected override Expression<Func<Course, bool>> KeyPredicate(int id)
         => x => x.CourseId == id;
