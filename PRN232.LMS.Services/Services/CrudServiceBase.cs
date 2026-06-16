@@ -7,7 +7,7 @@ using PRN232.LMS.Services.Extensions;
 
 namespace PRN232.LMS.Services.Services;
 
-public abstract class CrudServiceBase<TEntity, TResponse, TCreate, TUpdate>(GenericRepository<TEntity> repo, IMapper mapper)
+public abstract class CrudServiceBase<TEntity, TBusiness, TResponse, TCreate, TUpdate>(GenericRepository<TEntity> repo, IMapper mapper)
     where TEntity : class
 {
     protected readonly GenericRepository<TEntity> _repo = repo;
@@ -32,7 +32,8 @@ public abstract class CrudServiceBase<TEntity, TResponse, TCreate, TUpdate>(Gene
 
         var total = await query.CountAsync();
         var data = await query.ApplyPaging(param.Page, param.Size).ToListAsync();
-        var responses = _mapper.Map<List<TResponse>>(data);
+        var businesses = _mapper.Map<List<TBusiness>>(data);
+        var responses = _mapper.Map<List<TResponse>>(businesses);
 
         return responses.ToPagedResult(total, param);
     }
@@ -40,23 +41,30 @@ public abstract class CrudServiceBase<TEntity, TResponse, TCreate, TUpdate>(Gene
     public virtual async Task<TResponse?> GetByIdAsync(int id)
     {
         var data = await BuildIdQuery().FirstOrDefaultAsync(KeyPredicate(id));
-        return data is null ? default : _mapper.Map<TResponse>(data);
+        if (data is null) return default;
+        var business = _mapper.Map<TBusiness>(data);
+        return _mapper.Map<TResponse>(business);
     }
 
     public virtual async Task<TResponse> CreateAsync(TCreate request)
     {
-        var data = _mapper.Map<TEntity>(request);
-        await _repo.AddAsync(data);
-        return _mapper.Map<TResponse>(data);
+        var business = _mapper.Map<TBusiness>(request);
+        var entity = _mapper.Map<TEntity>(business);
+        await _repo.AddAsync(entity);
+        var resultBusiness = _mapper.Map<TBusiness>(entity);
+        return _mapper.Map<TResponse>(resultBusiness);
     }
 
     public virtual async Task<bool> PatchAsync(int id, TUpdate request)
     {
-        var data = await _repo.FirstOrDefaultAsync(KeyPredicate(id));
-        if (data is null) return false;
+        var entity = await _repo.FirstOrDefaultAsync(KeyPredicate(id));
+        if (entity is null) return false;
 
-        _mapper.Map(request, data);
-        await _repo.UpdateAsync(data);
+        var business = _mapper.Map<TBusiness>(entity);
+        _mapper.Map(request, business);
+        _mapper.Map(business, entity);
+
+        await _repo.UpdateAsync(entity);
         return true;
     }
 

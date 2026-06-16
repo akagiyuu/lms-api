@@ -20,6 +20,10 @@ services:
     environment:
       DATABASE_URL: Host=db;Port=5432;Database=lms;Username=postgres;Password=123456
       ASPNETCORE_ENVIRONMENT: Development
+      Jwt__Secret: "CHANGE_THIS_TO_A_STRONG_SECRET_IN_PRODUCTION_32CHARS"
+      Jwt__Issuer: "lms-api"
+      Jwt__Audience: "lms-client"
+      Jwt__ExpiresInSeconds: "3600"
     ports:
       - "5210:8080"
     depends_on:

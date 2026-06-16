@@ -1,4 +1,4 @@
-namespace PRN232.LMS.Services.Models;
+namespace PRN232.LMS.Services.Models.Response;
 
 public class BasicCourseResponse
 {
@@ -11,16 +11,4 @@ public class CourseResponse : BasicCourseResponse
 {
     public BasicSemesterResponse? Semester { get; set; }
     public List<BasicEnrollmentResponse>? Enrollments { get; set; }
-}
-
-public class CreateCourseRequest
-{
-    public string? CourseName { get; set; }
-    public int? SemesterId { get; set; }
-}
-
-public class UpdateCourseRequest
-{
-    public string? CourseName { get; set; }
-    public int? SemesterId { get; set; }
 }

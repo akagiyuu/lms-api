@@ -1,6 +1,8 @@
 using AutoMapper;
 using PRN232.LMS.Repositories.Models;
-using PRN232.LMS.Services.Models;
+using PRN232.LMS.Services.Models.Business;
+using PRN232.LMS.Services.Models.Request;
+using PRN232.LMS.Services.Models.Response;
 
 namespace PRN232.LMS.Services.Mapper;
 
@@ -8,38 +10,55 @@ public class AppProfile : Profile
 {
     public AppProfile()
     {
-        CreateMap<Semester, BasicSemesterResponse>();
-        CreateMap<Semester, SemesterResponse>();
+        // ── Entity → Business ────────────────────────────────────────────────
+        CreateMap<Semester, SemesterBusiness>();
+        CreateMap<Course, CourseBusiness>();
+        CreateMap<Subject, SubjectBusiness>();
+        CreateMap<Student, StudentBusiness>();
+        CreateMap<Enrollment, EnrollmentBusiness>();
+        CreateMap<User, UserBusiness>();
 
-        CreateMap<Course, BasicCourseResponse>();
-        CreateMap<Course, CourseResponse>();
+        // ── Business → Response ──────────────────────────────────────────────
+        CreateMap<SemesterBusiness, BasicSemesterResponse>();
+        CreateMap<SemesterBusiness, SemesterResponse>();
 
-        CreateMap<Subject, SubjectResponse>();
+        CreateMap<CourseBusiness, BasicCourseResponse>();
+        CreateMap<CourseBusiness, CourseResponse>();
 
-        CreateMap<Student, BasicStudentResponse>();
-        CreateMap<Student, StudentResponse>();
+        CreateMap<SubjectBusiness, SubjectResponse>();
 
-        CreateMap<Enrollment, BasicEnrollmentResponse>();
-        CreateMap<Enrollment, EnrollmentResponse>();
+        CreateMap<StudentBusiness, BasicStudentResponse>();
+        CreateMap<StudentBusiness, StudentResponse>();
 
-        CreateMap<CreateSemesterRequest, Semester>();
-        CreateMap<UpdateSemesterRequest, Semester>()
+        CreateMap<EnrollmentBusiness, BasicEnrollmentResponse>();
+        CreateMap<EnrollmentBusiness, EnrollmentResponse>();
+
+        // ── Business → Entity ────────────────────────────────────────────────
+        CreateMap<SemesterBusiness, Semester>();
+        CreateMap<CourseBusiness, Course>();
+        CreateMap<SubjectBusiness, Subject>();
+        CreateMap<StudentBusiness, Student>();
+        CreateMap<EnrollmentBusiness, Enrollment>();
+
+        // ── Request → Business ───────────────────────────────────────────────
+        CreateMap<CreateSemesterRequest, SemesterBusiness>();
+        CreateMap<UpdateSemesterRequest, SemesterBusiness>()
             .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
-        CreateMap<CreateCourseRequest, Course>();
-        CreateMap<UpdateCourseRequest, Course>()
+        CreateMap<CreateCourseRequest, CourseBusiness>();
+        CreateMap<UpdateCourseRequest, CourseBusiness>()
             .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
-        CreateMap<CreateSubjectRequest, Subject>();
-        CreateMap<UpdateSubjectRequest, Subject>()
+        CreateMap<CreateSubjectRequest, SubjectBusiness>();
+        CreateMap<UpdateSubjectRequest, SubjectBusiness>()
             .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
-        CreateMap<CreateStudentRequest, Student>();
-        CreateMap<UpdateStudentRequest, Student>()
+        CreateMap<CreateStudentRequest, StudentBusiness>();
+        CreateMap<UpdateStudentRequest, StudentBusiness>()
             .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
-        CreateMap<CreateEnrollmentRequest, Enrollment>();
-        CreateMap<UpdateEnrollmentRequest, Enrollment>()
+        CreateMap<CreateEnrollmentRequest, EnrollmentBusiness>();
+        CreateMap<UpdateEnrollmentRequest, EnrollmentBusiness>()
             .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
     }
 }
