@@ -10,6 +10,15 @@ public class AppProfile : Profile
 {
     public AppProfile()
     {
+        // ── Global Type Converters ───────────────────────────────────────────
+        CreateMap<DateTimeOffset, DateTime>().ConvertUsing(d => d.UtcDateTime);
+        CreateMap<DateTimeOffset?, DateTime?>().ConvertUsing(d => d.HasValue ? d.Value.UtcDateTime : null);
+        CreateMap<DateTimeOffset?, DateTime>().ConvertUsing(d => d.HasValue ? d.Value.UtcDateTime : default);
+        
+        CreateMap<DateTime, DateTimeOffset>().ConvertUsing(d => new DateTimeOffset(d, TimeSpan.Zero));
+        CreateMap<DateTime?, DateTimeOffset?>().ConvertUsing(d => d.HasValue ? new DateTimeOffset(d.Value, TimeSpan.Zero) : null);
+        CreateMap<DateTime, DateTimeOffset?>().ConvertUsing(d => new DateTimeOffset(d, TimeSpan.Zero));
+
         // ── Entity → Business ────────────────────────────────────────────────
         CreateMap<Semester, SemesterBusiness>();
         CreateMap<Course, CourseBusiness>();
