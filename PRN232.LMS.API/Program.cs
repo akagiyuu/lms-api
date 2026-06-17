@@ -26,7 +26,7 @@ builder.Services
         opt.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
     })
     .AddNewtonsoftJson()
-    .AddXmlSerializerFormatters();              // supports application/xml
+    .AddXmlDataContractSerializerFormatters(); // DataContractSerializer handles generics (ApiResponse<T>, PagedResult<T>)
 
 // ── Database ─────────────────────────────────────────────────────────────────
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");

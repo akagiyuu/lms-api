@@ -1,5 +1,19 @@
+using System.Runtime.Serialization;
+using PRN232.LMS.Services.Common;
+using PRN232.LMS.Services.Models.Response;
+
 namespace PRN232.LMS.API.Common;
 
+[KnownType(typeof(PagedResult<object>))]
+[KnownType(typeof(CourseResponse))]
+[KnownType(typeof(StudentResponse))]
+[KnownType(typeof(EnrollmentResponse))]
+[KnownType(typeof(SemesterResponse))]
+[KnownType(typeof(SubjectResponse))]
+[KnownType(typeof(TokenResponse))]
+[KnownType(typeof(Dictionary<string, string[]>))]
+[KnownType(typeof(System.Dynamic.ExpandoObject))]
+[KnownType(typeof(object))]
 public class ApiResponse<T>
 {
     public bool Success { get; set; }
