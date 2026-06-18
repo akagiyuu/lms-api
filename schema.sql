@@ -45,8 +45,3 @@ CREATE TABLE IF NOT EXISTS "User" (
 CREATE INDEX IF NOT EXISTS "IX_Course_SemesterId" ON "Course" ("SemesterId");
 CREATE INDEX IF NOT EXISTS "IX_Enrollment_CourseId" ON "Enrollment" ("CourseId");
 CREATE INDEX IF NOT EXISTS "IX_Enrollment_StudentId" ON "Enrollment" ("StudentId");
-
--- Seed default admin user  (password: Admin@123)
-INSERT INTO "User" ("Username", "PasswordHash", "Role")
-VALUES ('admin', '$2a$11$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Admin')
-ON CONFLICT DO NOTHING;
