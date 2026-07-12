@@ -1,33 +1,115 @@
 services:
-  db:
+  identity-db:
     image: postgres:latest
-    container_name: lms-db
+    container_name: identity-db
     environment:
-      POSTGRES_DB: lms
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: identity_db
     ports:
       - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d identity_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
-      - lms_pgdata:/var/lib/postgresql
-      - ./schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+      - identity_pgdata:/var/lib/postgresql
 
-  api:
+  student-db:
+    image: postgres:latest
+    container_name: student-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: student_db
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d student_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - student_pgdata:/var/lib/postgresql
+
+  course-db:
+    image: postgres:latest
+    container_name: course-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: course_db
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d course_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - course_pgdata:/var/lib/postgresql
+
+  identity-service:
     build:
       context: .
-      dockerfile: PRN232.LMS.API/Dockerfile
-    container_name: lms-api
+      dockerfile: src/Identity.Service/Dockerfile
+    container_name: identity-service
     environment:
-      DATABASE_URL: Host=db;Port=5432;Database=lms;Username=postgres;Password=123456
+      DATABASE_URL: Host=identity-db;Port=5432;Database=identity_db;Username=postgres;Password=123456
       ASPNETCORE_ENVIRONMENT: Development
-      Jwt__Secret: "CHANGE_THIS_TO_A_STRONG_SECRET_IN_PRODUCTION_32CHARS"
-      Jwt__Issuer: "lms-api"
-      Jwt__Audience: "lms-client"
-      Jwt__ExpiresInSeconds: "3600"
+    ports:
+      - "5211:8080"
+    depends_on:
+      identity-db:
+        condition: service_healthy
+
+  student-service:
+    build:
+      context: .
+      dockerfile: src/Student.Service/Dockerfile
+    container_name: student-service
+    environment:
+      DATABASE_URL: Host=student-db;Port=5432;Database=student_db;Username=postgres;Password=123456
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5212:8080"
+    depends_on:
+      student-db:
+        condition: service_healthy
+
+  course-service:
+    build:
+      context: .
+      dockerfile: src/Course.Service/Dockerfile
+    container_name: course-service
+    environment:
+      DATABASE_URL: Host=course-db;Port=5432;Database=course_db;Username=postgres;Password=123456
+      ASPNETCORE_ENVIRONMENT: Development
+      STUDENT_GRPC_URL: http://student-service:8081
+    ports:
+      - "5213:8080"
+    depends_on:
+      course-db:
+        condition: service_healthy
+      student-service:
+        condition: service_started
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: src/ApiGateway/Dockerfile
+    container_name: api-gateway
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
     ports:
       - "5210:8080"
     depends_on:
-      - db
+      - identity-service
+      - student-service
+      - course-service
 
 volumes:
-  lms_pgdata:
+  identity_pgdata:
+  student_pgdata:
+  course_pgdata:
